@@ -1,0 +1,34 @@
+{
+ "checker_input": {
+  "context": {
+   "claim_ref": "iv-0303",
+   "observer_key_basis": "published test key, MANIFEST.json keys.observer in vectors-observed-effect; anchored out of band, never read from the record",
+   "observer_public_key": "4f2a59edc8367deb40047ce83ee7f5ce711a57d93abbda9d1ce8588c56a3ce88"
+  },
+  "evidence": {
+   "observed_effect": {
+    "sha256": "d5e05b0f5d3cde4e4ec583e38f2b9a50d7b9a01bb5e5668dda00f0debb4230ee",
+    "slug": "write-observed-despite-a-named-gap",
+    "source": "agent-evidence-vectors==0.13.0",
+    "vector": "vd5e05b0f5d3cde4e"
+   }
+  },
+  "property": {
+   "name": "no_write_in_scope",
+   "scope": [
+    "/srv/app/"
+   ],
+   "statement": "no write occurred under these paths during the evaluated interval"
+  }
+ },
+ "clauses": [
+  "C3"
+ ],
+ "expected_if_adopted": {
+  "unmet_obligation": null,
+  "verdict": "fail"
+ },
+ "id": "RFC189-OE-05-FAIL-WITNESS-DESPITE-GAP",
+ "note": "Coverage is incomplete, and a write inside the scope was still observed from below the observed party. Fail needs no completeness premise.",
+ "status": "candidate_against_proposed"
+}

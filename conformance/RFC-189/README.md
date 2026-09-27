@@ -1,6 +1,6 @@
 # RFC-189 conformance: what a verifier may conclude when evidence is absent
 
-Executable cases for the verdict rule in [RFC-189](../../RFCs/RFC-189.md) ([issue #189](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/issues/189)). Every case is `candidate_against_proposed` and carries `expected_if_adopted` until the RFC is approved. None of them is normative yet.
+These are executable cases for the verdict rule in [RFC-189](../../RFCs/RFC-189.md) ([issue #189](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/issues/189)). Every case is `candidate_against_proposed` and carries `expected_if_adopted` until the RFC is approved. None of them is normative yet.
 
 Conformance leads: @aeoess and @astrogilda ([proposal](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/issues/189#issuecomment-5827010158), [accepted by the RFC author](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/issues/189#issuecomment-5827685232)).
 
@@ -56,7 +56,7 @@ The reference verifier in the [agent-evidence-vectors](https://pypi.org/project/
 | 12 | record 01 asked about a wider scope than it watched | `not_established` / `observation_coverage` | C5 |
 | 13 | a property the checker does not implement | processing failure, `UnsupportedVerification` | C2 |
 
-Cases 03, 04 and 05 are the reason naming a gap matters: all three read valid records that name /srv/app/vendor/ as unobserved, and they reach three different verdicts. The same record cannot support "nothing changed under /srv/app/" and fully supports "nothing changed under /srv/app/src/", and a write it did see still settles `fail`.
+Cases 03, 04 and 05 are the reason naming a gap matters: in all three the checker reads valid records that name /srv/app/vendor/ as unobserved, and it reaches three different verdicts. The same record cannot support "nothing changed under /srv/app/", yet it fully supports "nothing changed under /srv/app/src/", and a write it did see still settles `fail`.
 
 ## Open questions for the rule text
 
@@ -74,4 +74,4 @@ python run.py                      # grades every case, read-only, non-zero on a
 python -m unittest test_checker    # harness and checker regressions
 ```
 
-`run.py` resolves each record by its identifier from the installed corpus, checks it against the SHA-256 the case pins, and passes the checker only the `checker_input`. It never writes. Every record comes from the published release that `requirements.txt` pins by hash; nothing is copied into this directory.
+`run.py` resolves each record by its identifier from the installed corpus, checks it against the SHA-256 digest the case pins, and passes the checker only the `checker_input`. It never writes. Every record comes from the published release that `requirements.txt` pins by hash; nothing is copied into this directory.

@@ -23,6 +23,8 @@
  },
  "clauses": [
   "C1",
+  "C3",
+  "C8",
   "O1"
  ],
  "expected_if_adopted": {
@@ -30,6 +32,6 @@
   "verdict": "not_established"
  },
  "id": "RFC189-OE-10-NE-SELF-VANTAGE",
- "note": "A valid self-reported record that reports writes. Open question O1 in ../README.md: does a self-report of an effect settle fail?",
+ "note": "A valid self-reported record that reports writes. C3 would settle fail for an admissible witness, but this checker gates on independent vantage first. C8 and O1 remain open: does an authenticated self-report settle fail as an admission?",
  "status": "candidate_against_proposed"
 }

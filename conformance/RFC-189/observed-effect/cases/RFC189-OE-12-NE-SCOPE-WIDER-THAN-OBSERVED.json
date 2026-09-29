@@ -22,7 +22,7 @@
   }
  },
  "clauses": [
-  "C5"
+  "C4"
  ],
  "expected_if_adopted": {
   "unmet_obligation": "observation_coverage",

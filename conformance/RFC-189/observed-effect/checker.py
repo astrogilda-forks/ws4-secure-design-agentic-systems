@@ -25,8 +25,10 @@ Three outcome axes are kept apart, as the #189 thread requires:
   raise; they never become `not_established`.
 - `not_established` always names the unmet obligation.
 
-Checker input is {property, evidence, context}. The harness expectation is held
-outside it and compared by run.py afterwards.
+Checker input is {property, evidence, context}. Context may carry an expected
+prior commitment anchored outside the presented record for this invocation.
+The harness expectation is held outside the checker input and compared by
+run.py afterwards.
 """
 
 from __future__ import annotations
@@ -50,6 +52,7 @@ OBSERVATION_COVERAGE = "observation_coverage"
 OBSERVATION_VANTAGE = "observation_vantage"
 OBSERVATION_SCOPE = "observation_scope"
 ADMISSIBLE_OBSERVATION = "admissible_observation"
+INVOCATION_BINDING = "invocation_binding"
 
 # A record the reference verifier finds coherent but whose own rules refuse its
 # claim (verdict `invalid`) is not a processing failure: the verification ran.
@@ -116,6 +119,16 @@ def _validate(checker_input: Any) -> None:
         raise CandidateInputError(
             "context requires the observer's Ed25519 public key as 64 hex characters, "
             "anchored out of band and never read from the record"
+        )
+    expected_commitment = ctx.get("anchored_commitment_digest")
+    if expected_commitment is not None and (
+        not isinstance(expected_commitment, str)
+        or len(expected_commitment) != 64
+        or any(ch not in "0123456789abcdef" for ch in expected_commitment)
+    ):
+        raise CandidateInputError(
+            "context.anchored_commitment_digest must be a 64-character lowercase "
+            "hex digest when supplied"
         )
 
 
@@ -193,6 +206,20 @@ def evaluate(checker_input: dict[str, Any]) -> dict[str, Any]:
             OBSERVATION_VANTAGE,
             f"observation vantage is {observation['vantage']!r}; only a vantage the "
             "observed party cannot address is independent evidence",
+        )
+    # The signed interval identifier authenticates what the observer asserted,
+    # but does not join that interval to the invocation under evaluation. The
+    # expected prior commitment must come from trusted context independent of
+    # this record (for example, an external pre-interval witness). These
+    # synthetic cases stipulate that context; they do not prove its provenance.
+    expected_commitment = ctx.get("anchored_commitment_digest")
+    prior = observation.get("priorCommitment")
+    actual_commitment = prior.get("commitmentDigest") if isinstance(prior, dict) else None
+    if not expected_commitment or actual_commitment != expected_commitment:
+        return _not_established(
+            INVOCATION_BINDING,
+            "the record's prior commitment is not independently bound to the "
+            "evaluated invocation",
         )
     # Asymmetry: one observed write inside the property scope settles fail on
     # its own, with no completeness premise.

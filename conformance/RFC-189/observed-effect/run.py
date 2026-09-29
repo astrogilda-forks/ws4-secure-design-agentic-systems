@@ -53,6 +53,9 @@ def build_input(case: dict[str, Any]) -> dict[str, Any]:
         "context": {
             "claim_ref": spec["context"]["claim_ref"],
             "observer_public_key": spec["context"]["observer_public_key"],
+            "anchored_commitment_digest": spec["context"].get(
+                "anchored_commitment_digest"
+            ),
         },
     }
 

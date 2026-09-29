@@ -6,9 +6,9 @@ until RFC-189 is approved, and every case this checker grades is labelled
 `candidate_against_proposed`.
 
 The evidence is a signed Observed Effect statement (a DSSE envelope carrying an
-in-toto Statement): an observer records a mutation interval from a vantage the
-observed party does not control, with the path scope it covered, the gaps it
-did not cover, and every write it saw. Admission of that record is delegated to
+in-toto Statement): an observer records a mutation interval, the path scope it
+covered, the gaps it did not cover, and every write it saw. The checker tests
+whether the vantage is independent. Admission of the record is delegated to
 the reference verifier published as the `agent-evidence-vectors` package, so
 this file decides only what the RFC-189 rule decides: what the admitted record
 lets a verifier conclude about a property.

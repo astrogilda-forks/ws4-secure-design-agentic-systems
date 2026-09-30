@@ -66,6 +66,8 @@ Cases 11, 14 and 15 exercise three necessary binding checks. The observer's sign
 
 The synthetic fixtures **stipulate** that `anchored_commitment_digest` was anchored for the evaluated invocation outside the Observed Effect record. They test how the checker uses that premise, including a mismatch, but do not prove that any real controller witnessed the commitment before an invocation or retained it independently of the observed party. A real deployment must establish that provenance at a separate verifier surface. Copying the digest from the presented record does not satisfy C5.
 
+The checker returns the evaluated property, path scope, claim reference, observer key and expected prior commitment with each verdict. The harness checks that binding before it grades the verdict and unmet obligation. These values identify the evaluation; they do not establish the external anchor's provenance.
+
 ## Open questions for the rule text
 
 - O1: Does a record at the observed party's own vantage that reports an effect in scope settle `fail`, as an admission, or stay `not_established`? C3 says an **admissible** event can settle `fail` without completeness; C8's proposed independence gate makes case 10 inadmissible for this property's inference even though the record is structurally valid. Case 10 takes the second reading pending a WS4 decision. If an authenticated self-report counts as an admission, its expected verdict and the checker's gate order must change.

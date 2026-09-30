@@ -6,7 +6,9 @@ on:
       - "conformance/RFC-189/**"
       - ".github/workflows/conformance-rfc-189.yml"
   push:
-    branches: [main]
+    branches:
+      - main
+      - conformance/rfc-189-observed-effect
     paths:
       - "conformance/RFC-189/**"
       - ".github/workflows/conformance-rfc-189.yml"

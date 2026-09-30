@@ -24,6 +24,7 @@ Three outcome axes are kept apart, as the #189 thread requires:
   and a structurally invalid candidate input are processing failures. They
   raise; they never become `not_established`.
 - `not_established` always names the unmet obligation.
+- Each verdict carries the property and context used to reach it.
 
 Checker input is {property, evidence, context}. Context may carry an expected
 prior commitment anchored outside the presented record for this invocation.
@@ -150,7 +151,7 @@ def _not_established(obligation: str, reason: str) -> dict[str, Any]:
     }
 
 
-def evaluate(checker_input: dict[str, Any]) -> dict[str, Any]:
+def _evaluate(checker_input: dict[str, Any]) -> dict[str, Any]:
     _validate(checker_input)
     prop = checker_input["property"]
     ctx = checker_input["context"]
@@ -251,3 +252,18 @@ def evaluate(checker_input: dict[str, Any]) -> dict[str, Any]:
         "reason": "no write observed inside the property scope, with complete "
         "coverage of that scope for the interval, from an independent vantage",
     }
+
+
+def evaluate(checker_input: dict[str, Any]) -> dict[str, Any]:
+    result = _evaluate(checker_input)
+    prop = checker_input["property"]
+    ctx = checker_input["context"]
+    result["evaluation"] = {
+        "property": {"name": prop["name"], "scope": list(prop["scope"])},
+        "context": {
+            "claim_ref": ctx["claim_ref"],
+            "observer_public_key": ctx["observer_public_key"],
+            "anchored_commitment_digest": ctx.get("anchored_commitment_digest"),
+        },
+    }
+    return result

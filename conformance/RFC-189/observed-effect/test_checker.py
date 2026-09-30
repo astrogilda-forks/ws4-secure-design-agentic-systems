@@ -7,6 +7,7 @@ import json
 import os
 import unittest
 from typing import Any
+from unittest.mock import patch
 
 import checker
 import run
@@ -48,6 +49,17 @@ class Harness(unittest.TestCase):
         )
         with self.assertRaises(FileNotFoundError):
             run.build_input(case)
+
+    def test_a_verdict_without_its_evaluation_is_not_graded(self) -> None:
+        inp = run.build_input(load("RFC189-OE-03-NE-NAMED-GAP"))
+        detached = {
+            "verdict": "not_established",
+            "unmet_obligation": "observation_coverage",
+            "evaluation": {},
+        }
+        with patch.object(checker, "evaluate", return_value=detached):
+            with self.assertRaisesRegex(ValueError, "not bound"):
+                run.outcome(inp)
 
 
 class Checker(unittest.TestCase):
@@ -106,6 +118,29 @@ class Checker(unittest.TestCase):
         self.assertEqual(checker.evaluate(wide)["verdict"], "not_established")
         self.assertEqual(checker.evaluate(narrow)["verdict"], "pass")
         self.assertEqual(checker.evaluate(vendor)["verdict"], "not_established")
+
+    def test_equal_verdicts_keep_distinct_evaluations(self) -> None:
+        first_input = run.build_input(load("RFC189-OE-03-NE-NAMED-GAP"))
+        second_input = copy.deepcopy(first_input)
+        second_input["property"]["scope"] = ["/srv/app/vendor/"]
+        third_input = copy.deepcopy(first_input)
+        third_input["context"]["claim_ref"] = "another-interval"
+        first = checker.evaluate(first_input)
+        second = checker.evaluate(second_input)
+        third = checker.evaluate(third_input)
+        self.assertEqual(first["verdict"], second["verdict"])
+        self.assertEqual(first["unmet_obligation"], second["unmet_obligation"])
+        self.assertEqual(first["verdict"], third["verdict"])
+        self.assertEqual(first["unmet_obligation"], third["unmet_obligation"])
+        self.assertNotEqual(first["evaluation"], second["evaluation"])
+        self.assertNotEqual(first["evaluation"], third["evaluation"])
+        self.assertEqual(first["evaluation"]["property"]["scope"], ["/srv/app/"])
+        self.assertEqual(
+            first["evaluation"]["context"]["claim_ref"],
+            first_input["context"]["claim_ref"],
+        )
+        first_input["property"]["scope"].append("/elsewhere/")
+        self.assertEqual(first["evaluation"]["property"]["scope"], ["/srv/app/"])
 
 
 if __name__ == "__main__":

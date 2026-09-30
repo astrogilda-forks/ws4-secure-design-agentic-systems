@@ -71,6 +71,18 @@ def outcome(checker_input: dict[str, Any]) -> dict[str, Any]:
         if isinstance(exc, checker.MalformedEvidence):
             out["codes"] = exc.codes
         return out
+    prop = checker_input["property"]
+    ctx = checker_input["context"]
+    expected_evaluation = {
+        "property": {"name": prop["name"], "scope": prop["scope"]},
+        "context": {
+            "claim_ref": ctx["claim_ref"],
+            "observer_public_key": ctx["observer_public_key"],
+            "anchored_commitment_digest": ctx.get("anchored_commitment_digest"),
+        },
+    }
+    if result.get("evaluation") != expected_evaluation:
+        raise ValueError("checker result is not bound to the evaluated property and context")
     return {
         "verdict": result["verdict"],
         "unmet_obligation": result["unmet_obligation"],

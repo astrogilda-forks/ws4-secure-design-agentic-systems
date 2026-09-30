@@ -57,16 +57,18 @@ The reference verifier in the [agent-evidence-vectors](https://pypi.org/project/
 | 13 | a property the checker does not implement | processing failure, `UnsupportedVerification` | C2 |
 | 14 | matching interval IDs, but the record's prior commitment differs from the one expected for this invocation | `not_established` / `invocation_binding` | C5 |
 | 15 | matching interval IDs, but no expected commitment independently anchored for this invocation | `not_established` / `invocation_binding` | C5 |
+| 16 | complete observation, but write visibility declared for another invocation | `not_established` / `producer_capability_coverage` | C4, C5 |
+| 17 | complete observation, but no write visibility premise | `not_established` / `producer_capability_coverage` | C4 |
 
 Cases 03, 04 and 05 are the reason naming a gap matters: in all three the checker reads valid records that name /srv/app/vendor/ as unobserved, and it reaches three different verdicts. The same record cannot support "nothing changed under /srv/app/", yet it fully supports "nothing changed under /srv/app/src/", and a write it did see still settles `fail`.
 
-The Observed Effect cases exercise the **observation coverage** half of C4. The producer audit cases SINK-01 to SINK-03 exercise its **field visibility** half. Neither half alone establishes an absence claim.
+An absence claim needs both observation coverage and write visibility for the same invocation and path scope. The Observed Effect checker takes write visibility from trusted evaluation context, not from the record. Cases 16 and 17 test a mismatched or missing premise. The producer audit cases SINK-01 to SINK-03 test declared field visibility at its source; these fixtures assume that an independent surface established the context and do not prove its provenance.
 
 Cases 11, 14 and 15 exercise three necessary binding checks. The observer's signature authenticates the interval identifier and its prior commitment; the observer public key is selected out of band. The checker compares the signed `intervalId` with the context's `claim_ref`, then compares the signed prior `commitmentDigest` with `context.anchored_commitment_digest`. Case 14 keeps the identifiers equal but supplies the commitment for a different invocation, so matching strings cannot import its coverage. Case 15 omits an external commitment altogether; it also returns `not_established` / `invocation_binding` rather than passing or failing.
 
-The synthetic fixtures **stipulate** that `anchored_commitment_digest` was anchored for the evaluated invocation outside the Observed Effect record. They test how the checker uses that premise, including a mismatch, but do not prove that any real controller witnessed the commitment before an invocation or retained it independently of the observed party. A real deployment must establish that provenance at a separate verifier surface. Copying the digest from the presented record does not satisfy C5.
+The synthetic fixtures **stipulate** that `anchored_commitment_digest` and `producer_capability` were established for the evaluated invocation outside the Observed Effect record. They test how the checker uses those premises, including mismatches, but do not prove that a real controller witnessed the commitment before an invocation, retained it independently, or established write visibility. A real deployment must establish that provenance at a separate verifier surface. Copying the values from the presented record does not satisfy C4 or C5.
 
-The checker returns the evaluated property, path scope, claim reference, observer key and expected prior commitment with each verdict. The harness checks that binding before it grades the verdict and unmet obligation. These values identify the evaluation; they do not establish the external anchor's provenance.
+The checker returns the evaluated property, path scope, claim reference, observer key, expected prior commitment and producer capability with each verdict. The harness checks that binding before it grades the verdict and unmet obligation. These values identify the evaluation; they do not establish external provenance.
 
 ## Open questions for the rule text
 

@@ -3,9 +3,12 @@
   "context": {
    "claim_ref": "iv-0002",
    "producer_capability": {
-    "claim_ref": "iv-0002",
-    "visible_write_paths": ["/srv/app/"]
+    "claim_ref": "iv-other",
+    "visible_write_paths": [
+     "/srv/app/"
+    ]
    },
+   "anchored_commitment_digest": "aac59d4d47daa996b1d89dcd98002a628fbb46769512769302df44e083f97da6",
    "observer_key_basis": "published test key, MANIFEST.json keys.observer in vectors-observed-effect; anchored out of band, never read from the record",
    "observer_public_key": "4f2a59edc8367deb40047ce83ee7f5ce711a57d93abbda9d1ce8588c56a3ce88"
   },
@@ -26,13 +29,14 @@
   }
  },
  "clauses": [
+  "C4",
   "C5"
  ],
  "expected_if_adopted": {
-  "unmet_obligation": "invocation_binding",
-  "verdict": "not_established"
+  "verdict": "not_established",
+  "unmet_obligation": "producer_capability_coverage"
  },
- "id": "RFC189-OE-15-NE-NO-EXTERNAL-COMMITMENT",
- "note": "The signed record is complete and its intervalId equals claim_ref, but no prior commitment is independently anchored in the evaluation context. Its absence cannot establish a claim about this invocation by matching identifiers alone.",
+ "id": "RFC189-OE-16-NE-CAPABILITY-FOR-ANOTHER-CLAIM",
+ "note": "The record covers the evaluated interval, but the external write visibility premise belongs to another invocation. Matching observation coverage cannot establish this absence claim.",
  "status": "candidate_against_proposed"
 }

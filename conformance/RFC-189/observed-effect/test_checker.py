@@ -6,8 +6,13 @@ import copy
 import json
 import os
 import unittest
+from collections.abc import Callable, Iterator
+from contextlib import AbstractContextManager, contextmanager, nullcontext
+from types import SimpleNamespace
 from typing import Any
 from unittest.mock import patch
+
+from agent_evidence_vectors import observedeffect
 
 import checker
 import run
@@ -27,14 +32,14 @@ class Harness(unittest.TestCase):
 
     def test_expectation_never_reaches_the_checker(self) -> None:
         built = run.build_input(load("RFC189-OE-03-NE-NAMED-GAP"))
-        self.assertNotIn("expected_if_adopted", json.dumps(sorted(built)))
+        self.assertNotIn("expected", json.dumps(sorted(built)))
         self.assertEqual(set(built), {"property", "evidence", "context"})
 
     def test_a_tampered_expectation_is_reported_not_repaired(self) -> None:
         case = load("RFC189-OE-03-NE-NAMED-GAP")
         got = run.outcome(run.build_input(case))
-        case["expected_if_adopted"] = {"verdict": "pass", "unmet_obligation": None}
-        self.assertNotEqual(got, case["expected_if_adopted"])
+        case["expected"] = {"verdict": "pass", "unmet_obligation": None}
+        self.assertNotEqual(got, case["expected"])
 
     def test_a_pinned_hash_mismatch_refuses(self) -> None:
         case = load("RFC189-OE-01-PASS")
@@ -108,6 +113,16 @@ class Checker(unittest.TestCase):
             got = run.outcome(run.build_input(case))
             if got["verdict"] == "not_established":
                 self.assertTrue(got["unmet_obligation"], name)
+
+    def test_a_case_pinned_to_other_text_is_not_graded(self) -> None:
+        case = load("RFC189-OE-01-PASS")
+        case["against"] = dict(case["against"], commit="0" * 40)
+        with self.assertRaisesRegex(ValueError, "pinned to section 7.4"):
+            run.check_pin(case)
+        case = load("RFC189-OE-01-PASS")
+        case["status"] = "adopted"
+        with self.assertRaises(ValueError):
+            run.check_pin(case)
 
     def test_the_gap_decides_only_the_claims_it_touches(self) -> None:
         wide = run.build_input(load("RFC189-OE-03-NE-NAMED-GAP"))
@@ -187,6 +202,112 @@ class Checker(unittest.TestCase):
             ],
             ["/srv/app/"],
         )
+
+
+def case_ids() -> list[str]:
+    return sorted(
+        n.removesuffix(".json")
+        for n in os.listdir(os.path.join(HERE, "cases"))
+        if n.endswith(".json")
+    )
+
+
+@contextmanager
+def _reference_verifier_reads(
+    old_verdict: str, code: str, new_verdict: str, new_code: str
+) -> Iterator[None]:
+    """Re-read one refusal of the reference verifier as another verdict."""
+    real = observedeffect.verify
+
+    def verify(raw: bytes, policy: Any) -> Any:
+        report = real(raw, policy)
+        if report.verdict == old_verdict and report.codes[:1] == [code]:
+            return SimpleNamespace(verdict=new_verdict, codes=[new_code])
+        return report
+
+    with patch.object(observedeffect, "verify", verify):
+        yield
+
+
+def _without_stipulated_commitment(inp: dict[str, Any]) -> dict[str, Any]:
+    changed = copy.deepcopy(inp)
+    changed["context"]["anchored_commitment_digest"] = None
+    return changed
+
+
+def _unchanged(inp: dict[str, Any]) -> dict[str, Any]:
+    return inp
+
+
+# Each open item of section 7.4, settled the other way. A case depends on an
+# open item exactly when its graded outcome changes under that resolution.
+# - gap_naming: incomplete coverage that locates no gap is a well-formed
+#   unknown coverage state, so the claim is not_established, not malformed.
+# - claim_binding: a checker that requires provenance evidence for the prior
+#   commitment, which these fixtures only stipulate, at the point where binding
+#   is checked now.
+# - observation_vantage: a claim of independent observation from the observed
+#   party's own vantage is reported as a processing failure of its own rather
+#   than graded not_established.
+OPEN_ITEMS: dict[
+    str,
+    tuple[
+        Callable[[], AbstractContextManager[Any]],
+        Callable[[dict[str, Any]], dict[str, Any]],
+    ],
+] = {
+    "gap_naming": (
+        lambda: _reference_verifier_reads(
+            "malformed",
+            "coverage-incomplete-without-gaps",
+            "invalid",
+            "authoritative-coverage-incomplete",
+        ),
+        _unchanged,
+    ),
+    "claim_binding": (nullcontext, _without_stipulated_commitment),
+    "observation_vantage": (
+        lambda: _reference_verifier_reads(
+            "invalid",
+            "authoritative-vantage-not-independent",
+            "malformed",
+            "authoritative-vantage-not-independent",
+        ),
+        _unchanged,
+    ),
+}
+
+
+def cases_changed_by(item: str) -> set[str]:
+    resolve, rewrite = OPEN_ITEMS[item]
+    changed = set()
+    for case_id in case_ids():
+        inp = run.build_input(load(case_id))
+        before = run.outcome(inp)
+        with resolve():
+            after = run.outcome(rewrite(inp))
+        if after != before:
+            changed.add(case_id)
+    return changed
+
+
+class OpenItemDependencies(unittest.TestCase):
+    """A case's declared open-item dependencies are measured, not authored."""
+
+    def test_declared_dependencies_match_the_measured_ones(self) -> None:
+        for item in OPEN_ITEMS:
+            declared = {
+                case_id
+                for case_id in case_ids()
+                if item in load(case_id)["open_item_dependencies"]
+            }
+            with self.subTest(open_item=item):
+                self.assertEqual(cases_changed_by(item), declared)
+
+    def test_every_declared_item_is_an_open_item_of_the_text(self) -> None:
+        for case_id in case_ids():
+            for item in load(case_id)["open_item_dependencies"]:
+                self.assertIn(item, OPEN_ITEMS, case_id)
 
 
 if __name__ == "__main__":

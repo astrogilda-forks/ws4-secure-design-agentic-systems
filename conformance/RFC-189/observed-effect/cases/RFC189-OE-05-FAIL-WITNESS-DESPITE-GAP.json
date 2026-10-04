@@ -1,4 +1,9 @@
 {
+ "against": {
+  "commit": "84604125869469926968acdf433501f87d1d1665",
+  "document": "whitepapers/agent-containment.md",
+  "section": "7.4"
+ },
  "checker_input": {
   "context": {
    "anchored_commitment_digest": "1f43771ccf7c094b70daa09c51d1e44e23da22b3b0e802a2cc506a082c671f85",
@@ -31,11 +36,14 @@
  "clauses": [
   "C3"
  ],
- "expected_if_adopted": {
+ "expected": {
   "unmet_obligation": null,
   "verdict": "fail"
  },
  "id": "RFC189-OE-05-FAIL-WITNESS-DESPITE-GAP",
  "note": "Coverage is incomplete, and a write inside the scope was still observed from below the observed party. Fail needs no completeness premise.",
- "status": "candidate_against_proposed"
+ "open_item_dependencies": [
+  "claim_binding"
+ ],
+ "status": "candidate"
 }

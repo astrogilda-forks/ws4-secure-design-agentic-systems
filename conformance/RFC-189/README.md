@@ -1,6 +1,6 @@
-# RFC-189 conformance: what a verifier may conclude when evidence is absent
+# Section 7.4 candidate cases: what a verifier may conclude when evidence is absent
 
-These are executable cases for [section 7.4 of the containment paper](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/blob/84604125869469926968acdf433501f87d1d1665/whitepapers/agent-containment.md#74-evidence-sufficiency-for-absence-claims), merged into `feat/containment` at `84604125` through [#219](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/pull/219), and [issue #189](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/issues/189). The case files retain `candidate_against_proposed` and `expected_if_adopted` from before the merge. Updating those labels is a separate status decision.
+These are executable cases for [section 7.4 of the containment paper](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/blob/84604125869469926968acdf433501f87d1d1665/whitepapers/agent-containment.md#74-evidence-sufficiency-for-absence-claims), merged into `feat/containment` at `84604125` through [#219](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/pull/219), and [issue #189](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/issues/189). Every case file carries `"status": "candidate"` and an `against` block naming that file, section and commit; `run.py` refuses a case pinned to any other text. The cases stay non-normative until the paper is approved, as section 7.4 says. When an amendment changes 7.4, the pin, the clause table below and the expectations move together in one commit.
 
 Proposed conformance leads: @aeoess and @astrogilda ([proposal](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/issues/189#issuecomment-5827010158), [Imran's reply](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/issues/189#issuecomment-5827685232)).
 
@@ -40,7 +40,7 @@ The reference verifier in the [agent-evidence-vectors](https://pypi.org/project/
 
 ## Cases
 
-| Case | Record | Expected if adopted | Clauses |
+| Case | Record | Expected under 7.4 at `84604125` | Clauses |
 | --- | --- | --- | --- |
 | 01 | read-only interval, complete coverage | `pass` | C4 |
 | 02 | two writes observed in scope | `fail` | C3 |
@@ -69,11 +69,21 @@ Cases 11, 14 and 15 exercise three necessary binding checks. The observer's sign
 
 The synthetic fixtures **stipulate** that `anchored_commitment_digest` and `producer_capability` were established for the evaluated invocation outside the Observed Effect record. They test how the checker uses those premises, including mismatches, but do not prove that a real controller witnessed the commitment before an invocation, retained it independently, or established write visibility. A real deployment must establish that provenance at a separate verifier surface. Copying the values from the presented record does not satisfy C4 or C5.
 
-The checker returns the evaluated property, path scope, claim reference, observer key, expected prior commitment and producer capability with each verdict. The harness checks that binding before it grades the verdict and unmet obligation. These values identify the evaluation; they do not establish external provenance.
+The checker returns the evaluated property, path scope, claim reference, observer key, expected prior commitment and producer capability with each result. The claim reference is the interval identifier, so the binding names the property, invocation, interval and scope that C1 requires. The harness checks that binding before it grades the verdict and unmet obligation. These values identify the evaluation; they do not establish external provenance.
+
+## The three open items, and the cases that depend on them
+
+Section 7.4 names three open items. Each case file lists the ones its expected result depends on in `open_item_dependencies`, and the list is measured rather than written by hand: `test_checker.OpenItemDependencies` settles each item the other way, reruns every case, and fails unless the cases whose outcome changes are exactly the cases that declare the dependency.
+
+| Open item | Settled the other way, for the measurement | Cases whose result changes |
+| --- | --- | --- |
+| Gap naming | incomplete coverage that locates no gap is a well-formed unknown coverage state, so the claim is `not_established` | 06 |
+| Claim binding | the checker requires provenance evidence for the prior commitment, which these fixtures only stipulate | 01, 02, 03, 04, 05, 16, 17, 18 |
+| Observation vantage | a claim of independent observation from the observed party's own vantage is a processing failure of its own | 08 |
+
+Case 10 depends on none of them: C3 settles it. The claim-binding row is the dependency @aeoess measured on [#219](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/pull/219#issuecomment-5937888670) for cases 01 to 05 and 16 to 18, now held by a test.
 
 ## Open questions for the rule text
-
-- Pending action outcomes: C1 keeps an unknown action outcome `pending` after the reporting window. No case exercises that yet. It is an action outcome state, separate from the checker's three property verdicts.
 
 - C5 binding: Which independent witness anchors the expected prior commitment to the evaluated invocation, before that invocation, and how is its provenance checked? Case 14 tests a mismatch with matching interval IDs; the synthetic context still assumes the witness rather than proving it.
 

@@ -1,4 +1,9 @@
 {
+ "against": {
+  "commit": "84604125869469926968acdf433501f87d1d1665",
+  "document": "whitepapers/agent-containment.md",
+  "section": "7.4"
+ },
  "checker_input": {
   "context": {
    "claim_ref": "iv-0105",
@@ -31,11 +36,14 @@
   "C1",
   "C8"
  ],
- "expected_if_adopted": {
+ "expected": {
   "unmet_obligation": "observation_vantage",
   "verdict": "not_established"
  },
  "id": "RFC189-OE-08-NE-SELF-VANTAGE-CLAIMING-INDEPENDENCE",
  "note": "The observed party's own record claims the independent tier. The reference verifier refuses it (authoritative-vantage-not-independent); a refused record supports neither pass nor fail.",
- "status": "candidate_against_proposed"
+ "open_item_dependencies": [
+  "observation_vantage"
+ ],
+ "status": "candidate"
 }

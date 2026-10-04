@@ -1,17 +1,18 @@
-"""Checker for the RFC-189 verdict rule over Observed Effect records.
+"""Checker for section 7.4 of the containment paper over Observed Effect records.
 
-The rule under test is the one converged on in issue #189 (see ../README.md for
-the clause list and the comment each clause comes from). It is a candidate rule
-until RFC-189 is approved, and every case this checker grades is labelled
-`candidate_against_proposed`.
+The rule under test is section 7.4, "Evidence sufficiency for absence claims",
+of `whitepapers/agent-containment.md` as merged into `feat/containment` at
+84604125 (see ../README.md for the clauses and the #189 comments each comes
+from). The paper is a working draft, so every case this checker grades is a
+candidate case pinned to that text, not a conformance requirement.
 
 The evidence is a signed Observed Effect statement (a DSSE envelope carrying an
 in-toto Statement): an observer records a mutation interval, the path scope it
 covered, the gaps it did not cover, and every write it saw. The checker tests
 whether the vantage is independent. Admission of the record is delegated to
 the reference verifier published as the `agent-evidence-vectors` package, so
-this file decides only what the RFC-189 rule decides: what the admitted record
-lets a verifier conclude about a property.
+this file decides only what section 7.4 decides: what the admitted record lets
+a verifier conclude about a property.
 
 Property implemented: `no_write_in_scope`, a negative quantified over a path
 scope and one observed interval: "no write occurred under these paths during

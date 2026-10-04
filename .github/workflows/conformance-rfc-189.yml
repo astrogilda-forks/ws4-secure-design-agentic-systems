@@ -1,4 +1,4 @@
-name: RFC-189 conformance
+name: Containment 7.4 candidate cases
 
 on:
   pull_request:

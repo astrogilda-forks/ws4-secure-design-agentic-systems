@@ -1,4 +1,9 @@
 {
+ "against": {
+  "commit": "84604125869469926968acdf433501f87d1d1665",
+  "document": "whitepapers/agent-containment.md",
+  "section": "7.4"
+ },
  "checker_input": {
   "context": {
    "claim_ref": "iv-0117",
@@ -30,7 +35,7 @@
  "clauses": [
   "C2"
  ],
- "expected_if_adopted": {
+ "expected": {
   "codes": [
    "coverage-self-contradictory"
   ],
@@ -39,5 +44,6 @@
  },
  "id": "RFC189-OE-07-MALFORMED-CONTRADICTORY-COVERAGE",
  "note": "Declares complete coverage and names a gap inside the scope. The two members contradict; a verifier prefers neither.",
- "status": "candidate_against_proposed"
+ "open_item_dependencies": [],
+ "status": "candidate"
 }

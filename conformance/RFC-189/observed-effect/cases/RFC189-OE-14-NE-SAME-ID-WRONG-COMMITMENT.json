@@ -1,4 +1,9 @@
 {
+ "against": {
+  "commit": "84604125869469926968acdf433501f87d1d1665",
+  "document": "whitepapers/agent-containment.md",
+  "section": "7.4"
+ },
  "checker_input": {
   "context": {
    "anchored_commitment_digest": "3cb02c897eeb7eacbb52fc7f92d870e96781a4c7ec6c3a9c03a0cf7eed46c433",
@@ -31,11 +36,12 @@
  "clauses": [
   "C5"
  ],
- "expected_if_adopted": {
+ "expected": {
   "unmet_obligation": "invocation_binding",
   "verdict": "not_established"
  },
  "id": "RFC189-OE-14-NE-SAME-ID-WRONG-COMMITMENT",
  "note": "The record and claim_ref both say iv-0002, but the trusted evaluation context expects the different prior commitment pinned for iv-0001. A matching interval ID cannot import this record's coverage into that invocation. The case assumes the context commitment was independently anchored before evaluation; it does not prove the anchor's provenance.",
- "status": "candidate_against_proposed"
+ "open_item_dependencies": [],
+ "status": "candidate"
 }

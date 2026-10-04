@@ -1,10 +1,11 @@
 """Grade every committed case against checker.evaluate. Read-only.
 
-For each case file: resolve the named Observed Effect record to its bytes, check
-the bytes against the pinned SHA-256, build the checker input from
-`checker_input` alone, evaluate, and compare the outcome with
-`expected_if_adopted`. The expectation never reaches the checker. Nothing is
-written; any mismatch, missing record or hash mismatch exits non-zero.
+For each case file: check that it is a candidate case pinned to the section
+7.4 text in AGAINST, resolve the named Observed Effect record to its bytes,
+check the bytes against the pinned SHA-256, build the checker input from
+`checker_input` alone, evaluate, and compare the outcome with `expected`. The
+expectation never reaches the checker. Nothing is written; any mismatch,
+missing record, hash mismatch or case pinned to other text exits non-zero.
 
 Records come only from the installed `agent-evidence-vectors` package: the
 published corpus at the release requirements.txt pins by hash.
@@ -22,6 +23,16 @@ from typing import Any
 import checker
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+
+# The text every case is graded against: section 7.4 as merged through #219.
+# Repinning the cases to an amended 7.4 changes this constant and every case
+# file together, so no case can silently stay graded against older text.
+AGAINST = {
+    "document": "whitepapers/agent-containment.md",
+    "section": "7.4",
+    "commit": "84604125869469926968acdf433501f87d1d1665",
+}
+STATUS = "candidate"
 FAILURES = (
     checker.MalformedEvidence,
     checker.UnsupportedVerification,
@@ -91,6 +102,14 @@ def outcome(checker_input: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def check_pin(case: dict[str, Any]) -> None:
+    if case.get("status") != STATUS or case.get("against") != AGAINST:
+        raise ValueError(
+            f"case is not a {STATUS} case pinned to section {AGAINST['section']} "
+            f"at {AGAINST['commit'][:8]}"
+        )
+
+
 def main() -> int:
     case_dir = os.path.join(HERE, "cases")
     names = sorted(n for n in os.listdir(case_dir) if n.endswith(".json"))
@@ -102,12 +121,13 @@ def main() -> int:
         with open(os.path.join(case_dir, name), encoding="utf-8") as fh:
             case = json.load(fh)
         try:
+            check_pin(case)
             got = outcome(build_input(case))
         except (OSError, ValueError, KeyError) as exc:
             print(f"ERROR {case.get('id', name)}: {exc}")
             mismatches += 1
             continue
-        want = case["expected_if_adopted"]
+        want = case["expected"]
         ok = got == want
         mismatches += not ok
         status = "ok  " if ok else "FAIL"

@@ -1,4 +1,9 @@
 {
+ "against": {
+  "commit": "84604125869469926968acdf433501f87d1d1665",
+  "document": "whitepapers/agent-containment.md",
+  "section": "7.4"
+ },
  "checker_input": {
   "context": {
    "claim_ref": "iv-0002",
@@ -30,11 +35,12 @@
  "clauses": [
   "C5"
  ],
- "expected_if_adopted": {
+ "expected": {
   "unmet_obligation": "invocation_binding",
   "verdict": "not_established"
  },
  "id": "RFC189-OE-15-NE-NO-EXTERNAL-COMMITMENT",
  "note": "The signed record is complete and its intervalId equals claim_ref, but no prior commitment is independently anchored in the evaluation context. Its absence cannot establish a claim about this invocation by matching identifiers alone.",
- "status": "candidate_against_proposed"
+ "open_item_dependencies": [],
+ "status": "candidate"
 }

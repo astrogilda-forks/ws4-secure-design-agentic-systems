@@ -1,4 +1,9 @@
 {
+ "against": {
+  "commit": "84604125869469926968acdf433501f87d1d1665",
+  "document": "whitepapers/agent-containment.md",
+  "section": "7.4"
+ },
  "checker_input": {
   "context": {
    "anchored_commitment_digest": "3cb02c897eeb7eacbb52fc7f92d870e96781a4c7ec6c3a9c03a0cf7eed46c433",
@@ -31,11 +36,14 @@
  "clauses": [
   "C3"
  ],
- "expected_if_adopted": {
+ "expected": {
   "unmet_obligation": null,
   "verdict": "fail"
  },
  "id": "RFC189-OE-02-FAIL-WITNESS",
  "note": "Two writes observed inside the scope. One witness settles fail.",
- "status": "candidate_against_proposed"
+ "open_item_dependencies": [
+  "claim_binding"
+ ],
+ "status": "candidate"
 }

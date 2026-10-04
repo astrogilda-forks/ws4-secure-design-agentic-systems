@@ -1,0 +1,41 @@
+{
+ "boundary": "request-to-action",
+ "consumer_result": {
+  "result": "processing_failure",
+  "unmet_obligation": null
+ },
+ "evidence": {
+  "corpus": "vectors-agent-audit-record",
+  "member": "vf3cf268dae0800ff",
+  "reader": "auditrecord",
+  "sha256": "f3cf268dae0800ff3c902003d62e57d12d89c8a3426727f2b1006328978478c4",
+  "source": "agent-evidence-vectors==0.16.0"
+ },
+ "id": "D2A-09-ACTION-CHANGED-AFTER-DECISION",
+ "join": "the record's requestDigest is recomputed over the decided action and its arguments, so the effect is joined to the request that was decided",
+ "note": "The action was changed and the request digest left as decided. The recompute refuses the record before any claim about the action is graded.",
+ "reader_expected": {
+  "codes": [
+   "request-digest-mismatch"
+  ],
+  "verdict": "malformed"
+ },
+ "requirements": {
+  "adopted": {
+   "clauses": [
+    "C2"
+   ],
+   "commit": "84604125869469926968acdf433501f87d1d1665",
+   "document": "whitepapers/agent-containment.md",
+   "section": "7.4"
+  },
+  "proposed": {
+   "commit": "1a1a2effdbddf1013680fea52e56ee190c171e69",
+   "document": "RFCs/RFC-149.md",
+   "items": [
+    "revision-and-subject-join"
+   ]
+  }
+ },
+ "status": "candidate"
+}

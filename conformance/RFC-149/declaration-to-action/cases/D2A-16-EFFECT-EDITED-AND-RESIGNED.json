@@ -1,0 +1,41 @@
+{
+ "boundary": "decision-to-effect",
+ "consumer_result": {
+  "result": "processing_failure",
+  "unmet_obligation": null
+ },
+ "evidence": {
+  "corpus": "vectors-agent-audit-record",
+  "member": "v7fad746721358d9d",
+  "reader": "auditrecord",
+  "sha256": "7fad746721358d9d4d4e3599320737c1e3321a237479be10dc2d7cf7c9ab14e3",
+  "source": "agent-evidence-vectors==0.16.0"
+ },
+ "id": "D2A-16-EFFECT-EDITED-AND-RESIGNED",
+ "join": "the decision (permit or deny) is recorded beside the effect an observer derived from the before and after state of the declared scope",
+ "note": "The effect is edited to none and the record re-signed with the real key. The signature verifies; the recompute from the declared roots and writes refuses it.",
+ "reader_expected": {
+  "codes": [
+   "effect-observed-underivable"
+  ],
+  "verdict": "malformed"
+ },
+ "requirements": {
+  "adopted": {
+   "clauses": [
+    "C2"
+   ],
+   "commit": "84604125869469926968acdf433501f87d1d1665",
+   "document": "whitepapers/agent-containment.md",
+   "section": "7.4"
+  },
+  "proposed": {
+   "commit": "1a1a2effdbddf1013680fea52e56ee190c171e69",
+   "document": "RFCs/RFC-149.md",
+   "items": [
+    "runtime-verifier"
+   ]
+  }
+ },
+ "status": "candidate"
+}

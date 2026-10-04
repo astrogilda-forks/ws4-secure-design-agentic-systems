@@ -1,0 +1,42 @@
+{
+ "boundary": "request-to-action",
+ "consumer_result": {
+  "result": "not_established",
+  "unmet_obligation": "invocation_binding"
+ },
+ "evidence": {
+  "corpus": "vectors-agent-audit-record",
+  "member": "v43e2fe48bc27164d",
+  "reader": "auditrecord",
+  "sha256": "43e2fe48bc27164d414b64027f52d9a468a03d21ceb893df27c533bbcd9cf37e",
+  "source": "agent-evidence-vectors==0.16.0"
+ },
+ "id": "D2A-10-ARGUMENTS-NOT-BINDABLE",
+ "join": "the record's requestDigest is recomputed over the decided action and its arguments, so the effect is joined to the request that was decided",
+ "note": "The record says its arguments cannot be bound. It is valid and voluntary; it cannot establish that the effect came from the decided request.",
+ "reader_expected": {
+  "codes": [],
+  "tier": "voluntary",
+  "verdict": "valid"
+ },
+ "requirements": {
+  "adopted": {
+   "clauses": [
+    "C1",
+    "C5"
+   ],
+   "commit": "84604125869469926968acdf433501f87d1d1665",
+   "document": "whitepapers/agent-containment.md",
+   "section": "7.4"
+  },
+  "proposed": {
+   "commit": "1a1a2effdbddf1013680fea52e56ee190c171e69",
+   "document": "RFCs/RFC-149.md",
+   "items": [
+    "revision-and-subject-join",
+    "missing-evidence-result"
+   ]
+  }
+ },
+ "status": "candidate"
+}

@@ -1,0 +1,36 @@
+{
+ "boundary": "declaration-to-content",
+ "consumer_result": {
+  "result": "fail",
+  "unmet_obligation": null
+ },
+ "evidence": {
+  "corpus": "vectors-artifact-binding",
+  "member": "v21fa0d3af33d010d",
+  "reader": "aee-verify",
+  "sha256": "7f5e8ca5dd19e86e2b496250d31d99af86106c0c755ad93acd2ca9ca774918ef",
+  "source": "agent-evidence-vectors==0.16.0"
+ },
+ "id": "D2A-05-TRAJECTORY-POINTER-MISMATCH",
+ "join": "a signed binding manifest names each artifact of the run by role, path and digest; the relying party checks the deployed files against it",
+ "note": "The record points at a trajectory document other than the one it hashed: an ambiguous reference, refused.",
+ "reader_expected": {
+  "verdict": "failed"
+ },
+ "requirements": {
+  "adopted": {
+   "clauses": [],
+   "commit": "84604125869469926968acdf433501f87d1d1665",
+   "document": "whitepapers/agent-containment.md",
+   "section": "7.4"
+  },
+  "proposed": {
+   "commit": "1a1a2effdbddf1013680fea52e56ee190c171e69",
+   "document": "RFCs/RFC-149.md",
+   "items": [
+    "revision-and-subject-join"
+   ]
+  }
+ },
+ "status": "candidate"
+}

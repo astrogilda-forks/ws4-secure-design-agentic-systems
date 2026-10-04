@@ -1,0 +1,40 @@
+{
+ "boundary": "decision-to-effect",
+ "consumer_result": {
+  "result": "pass",
+  "unmet_obligation": null
+ },
+ "evidence": {
+  "corpus": "vectors-agent-audit-record",
+  "member": "vf410c7b4b792c0b3",
+  "reader": "auditrecord",
+  "sha256": "f410c7b4b792c0b30bfb7c0a96f59a3213e4100def30f3c8a2dda11522e3e758",
+  "source": "agent-evidence-vectors==0.16.0"
+ },
+ "id": "D2A-11-DENIED-AND-NO-EFFECT",
+ "join": "the decision (permit or deny) is recorded beside the effect an observer derived from the before and after state of the declared scope",
+ "note": "Deny beside equal before and after roots, observed independently over the declared scope. The denied action had no effect.",
+ "reader_expected": {
+  "codes": [],
+  "tier": "authoritative",
+  "verdict": "valid"
+ },
+ "requirements": {
+  "adopted": {
+   "clauses": [
+    "C4"
+   ],
+   "commit": "84604125869469926968acdf433501f87d1d1665",
+   "document": "whitepapers/agent-containment.md",
+   "section": "7.4"
+  },
+  "proposed": {
+   "commit": "1a1a2effdbddf1013680fea52e56ee190c171e69",
+   "document": "RFCs/RFC-149.md",
+   "items": [
+    "runtime-verifier"
+   ]
+  }
+ },
+ "status": "candidate"
+}

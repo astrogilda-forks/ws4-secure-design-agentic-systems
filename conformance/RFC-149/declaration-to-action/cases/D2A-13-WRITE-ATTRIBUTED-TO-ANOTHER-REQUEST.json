@@ -1,0 +1,40 @@
+{
+ "boundary": "decision-to-effect",
+ "consumer_result": {
+  "result": "pass",
+  "unmet_obligation": null
+ },
+ "evidence": {
+  "corpus": "vectors-agent-audit-record",
+  "member": "v3843cd0f05c512e2",
+  "reader": "auditrecord",
+  "sha256": "3843cd0f05c512e252a06f6974d7a349a6d393ddffad6348ce63d102a1c60939",
+  "source": "agent-evidence-vectors==0.16.0"
+ },
+ "id": "D2A-13-WRITE-ATTRIBUTED-TO-ANOTHER-REQUEST",
+ "join": "the decision (permit or deny) is recorded beside the effect an observer derived from the before and after state of the declared scope",
+ "note": "Deny, and the one write in scope is attributed to a different request. The denied action had no effect; the write belongs elsewhere.",
+ "reader_expected": {
+  "codes": [],
+  "tier": "authoritative",
+  "verdict": "valid"
+ },
+ "requirements": {
+  "adopted": {
+   "clauses": [
+    "C5"
+   ],
+   "commit": "84604125869469926968acdf433501f87d1d1665",
+   "document": "whitepapers/agent-containment.md",
+   "section": "7.4"
+  },
+  "proposed": {
+   "commit": "1a1a2effdbddf1013680fea52e56ee190c171e69",
+   "document": "RFCs/RFC-149.md",
+   "items": [
+    "runtime-verifier"
+   ]
+  }
+ },
+ "status": "candidate"
+}

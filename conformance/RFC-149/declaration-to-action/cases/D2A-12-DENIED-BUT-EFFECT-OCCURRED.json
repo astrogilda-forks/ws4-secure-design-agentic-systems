@@ -1,0 +1,40 @@
+{
+ "boundary": "decision-to-effect",
+ "consumer_result": {
+  "result": "fail",
+  "unmet_obligation": null
+ },
+ "evidence": {
+  "corpus": "vectors-agent-audit-record",
+  "member": "v91afc5ba76960569",
+  "reader": "auditrecord",
+  "sha256": "91afc5ba76960569cd511adc2099bf706671ba742a539cb136297ba8f73c749d",
+  "source": "agent-evidence-vectors==0.16.0"
+ },
+ "id": "D2A-12-DENIED-BUT-EFFECT-OCCURRED",
+ "join": "the decision (permit or deny) is recorded beside the effect an observer derived from the before and after state of the declared scope",
+ "note": "Deny beside an observed write, and the record keeps the disagreement. An admissible observation of the event settles fail.",
+ "reader_expected": {
+  "codes": [],
+  "tier": "authoritative",
+  "verdict": "valid"
+ },
+ "requirements": {
+  "adopted": {
+   "clauses": [
+    "C3"
+   ],
+   "commit": "84604125869469926968acdf433501f87d1d1665",
+   "document": "whitepapers/agent-containment.md",
+   "section": "7.4"
+  },
+  "proposed": {
+   "commit": "1a1a2effdbddf1013680fea52e56ee190c171e69",
+   "document": "RFCs/RFC-149.md",
+   "items": [
+    "runtime-verifier"
+   ]
+  }
+ },
+ "status": "candidate"
+}

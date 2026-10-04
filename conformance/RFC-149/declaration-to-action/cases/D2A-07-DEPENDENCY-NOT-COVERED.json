@@ -1,0 +1,40 @@
+{
+ "boundary": "declaration-to-content",
+ "consumer_result": {
+  "result": "not_established",
+  "unmet_obligation": "dependency_coverage"
+ },
+ "evidence": {
+  "corpus": "vectors-artifact-binding",
+  "member": "vfa81facc1464c1d6",
+  "reader": "aee-verify",
+  "sha256": "f90ca279a1d91bc166c6fcb5cf960d0560872c8dfdb8feb1c76c6cad0b8d4929",
+  "source": "agent-evidence-vectors==0.16.0"
+ },
+ "id": "D2A-07-DEPENDENCY-NOT-COVERED",
+ "join": "a signed binding manifest names each artifact of the run by role, path and digest; the relying party checks the deployed files against it",
+ "note": "The run names an external subagent document the declaration does not cover. Partial verification is declared, not silently narrowed.",
+ "reader_expected": {
+  "verdict": "not-established"
+ },
+ "requirements": {
+  "adopted": {
+   "clauses": [
+    "C1",
+    "C4"
+   ],
+   "commit": "84604125869469926968acdf433501f87d1d1665",
+   "document": "whitepapers/agent-containment.md",
+   "section": "7.4"
+  },
+  "proposed": {
+   "commit": "1a1a2effdbddf1013680fea52e56ee190c171e69",
+   "document": "RFCs/RFC-149.md",
+   "items": [
+    "revision-and-subject-join",
+    "missing-evidence-result"
+   ]
+  }
+ },
+ "status": "candidate"
+}

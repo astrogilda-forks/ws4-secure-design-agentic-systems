@@ -1,0 +1,39 @@
+{
+ "boundary": "declaration-to-content",
+ "consumer_result": {
+  "result": "not_established",
+  "unmet_obligation": "content_coverage"
+ },
+ "evidence": {
+  "corpus": "vectors-artifact-binding",
+  "member": "v63555b6f69adb453",
+  "reader": "aee-verify",
+  "sha256": "37ff774ee7479c855f9f444898e331d886b640ac2cee5f88e842413f2890292a",
+  "source": "agent-evidence-vectors==0.16.0"
+ },
+ "id": "D2A-06-REQUIRED-ROLE-ABSENT",
+ "join": "a signed binding manifest names each artifact of the run by role, path and digest; the relying party checks the deployed files against it",
+ "note": "A required artifact was never captured. The declaration cannot be checked to a conclusion; this is neither a pass nor evidence of tampering.",
+ "reader_expected": {
+  "verdict": "not-established"
+ },
+ "requirements": {
+  "adopted": {
+   "clauses": [
+    "C1"
+   ],
+   "commit": "84604125869469926968acdf433501f87d1d1665",
+   "document": "whitepapers/agent-containment.md",
+   "section": "7.4"
+  },
+  "proposed": {
+   "commit": "1a1a2effdbddf1013680fea52e56ee190c171e69",
+   "document": "RFCs/RFC-149.md",
+   "items": [
+    "revision-and-subject-join",
+    "missing-evidence-result"
+   ]
+  }
+ },
+ "status": "candidate"
+}

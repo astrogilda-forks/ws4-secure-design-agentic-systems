@@ -107,12 +107,39 @@ class Checker(unittest.TestCase):
         with self.assertRaises(checker.MalformedEvidence):
             checker.evaluate(inp)
 
-    def test_not_established_always_names_an_obligation(self) -> None:
+    def test_an_open_result_always_names_an_obligation(self) -> None:
         for name in sorted(os.listdir(os.path.join(HERE, "cases"))):
             case = load(name.removesuffix(".json"))
             got = run.outcome(run.build_input(case))
-            if got["verdict"] == "not_established":
+            if got.get("verdict") == "not_established" or got.get("outcome") == "pending":
                 self.assertTrue(got["unmet_obligation"], name)
+
+    def test_an_unknown_action_outcome_stays_pending_after_the_window(self) -> None:
+        inp = run.build_input(load("RFC189-OE-20-PENDING-RETRY-OUTCOME-AFTER-WINDOW"))
+        got = checker.evaluate(inp)
+        self.assertEqual(got["outcome"], "pending")
+        self.assertNotIn("verdict", got)
+        self.assertIn("not verified by the end of the window", got["reason"])
+
+    def test_action_outcome_reads_the_absence_verdict_on_the_same_evidence(self) -> None:
+        for case_id in case_ids():
+            inp = run.build_input(load(case_id))
+            if inp["property"]["name"] != checker.ACTION_OUTCOME:
+                continue
+            absence = copy.deepcopy(inp)
+            absence["property"]["name"] = checker.NO_WRITE_IN_SCOPE
+            verdict = checker.evaluate(absence)
+            outcome = checker.evaluate(inp)
+            want = {"pass": "absent", "fail": "present", "not_established": "pending"}
+            with self.subTest(case=case_id):
+                self.assertEqual(outcome["outcome"], want[verdict["verdict"]])
+                self.assertEqual(outcome["unmet_obligation"], verdict["unmet_obligation"])
+
+    def test_a_malformed_record_is_a_processing_failure_for_the_outcome_too(self) -> None:
+        inp = run.build_input(load("RFC189-OE-06-MALFORMED-UNNAMED-GAP"))
+        inp["property"]["name"] = checker.ACTION_OUTCOME
+        with self.assertRaises(checker.MalformedEvidence):
+            checker.evaluate(inp)
 
     def test_a_case_pinned_to_other_text_is_not_graded(self) -> None:
         case = load("RFC189-OE-01-PASS")

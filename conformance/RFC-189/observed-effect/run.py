@@ -96,10 +96,8 @@ def outcome(checker_input: dict[str, Any]) -> dict[str, Any]:
     }
     if result.get("evaluation") != expected_evaluation:
         raise ValueError("checker result is not bound to the evaluated property and context")
-    return {
-        "verdict": result["verdict"],
-        "unmet_obligation": result["unmet_obligation"],
-    }
+    axis = "outcome" if "outcome" in result else "verdict"
+    return {axis: result[axis], "unmet_obligation": result["unmet_obligation"]}
 
 
 def check_pin(case: dict[str, Any]) -> None:

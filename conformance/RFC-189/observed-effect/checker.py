@@ -12,20 +12,25 @@ covered, the gaps it did not cover, and every write it saw. The checker tests
 whether the vantage is independent. Admission of the record is delegated to
 the reference verifier published as the `agent-evidence-vectors` package, so
 this file decides only what section 7.4 decides: what the admitted record lets
-a verifier conclude about a property.
+a verifier conclude.
 
-Property implemented: `no_write_in_scope`, a negative quantified over a path
-scope and one observed interval: "no write occurred under these paths during
-this interval."
+Properties implemented:
 
-Three outcome axes are kept apart, as the #189 thread requires:
+- `no_write_in_scope`, a negative quantified over a path scope and one observed
+  interval: "no write occurred under these paths during this interval." Its
+  verdict is exactly `pass`, `fail` or `not_established`.
+- `action_outcome`, the outcome of the invoked action's write under a path
+  scope, reported in section 7's observation states: `present`, `absent` or
+  `pending`. C1 keeps an unknown action outcome `pending` after the reporting
+  window ends; it never becomes `not_established`.
 
-- The property verdict is exactly `pass`, `fail` or `not_established`.
+The outcome axes stay apart, as C1 and C2 require:
+
 - A record the reference verifier refuses as malformed, an unsupported property
   and a structurally invalid candidate input are processing failures. They
-  raise; they never become `not_established`.
-- `not_established` always names the unmet obligation.
-- Each verdict carries the property and context used to reach it.
+  raise; they never become `not_established` or `pending`.
+- `not_established` and `pending` always name the unmet obligation.
+- Each result carries the property and context used to reach it.
 
 Checker input is {property, evidence, context}. Context may carry an expected
 prior commitment and producer capability established outside the record for
@@ -45,7 +50,9 @@ from agent_evidence_vectors import observedeffect
 PREDICATE_TYPE = (
     "https://probityai.github.io/agent-evidence-vectors/predicate/v1/observed-effect"
 )
-SUPPORTED_PROPERTIES = frozenset({"no_write_in_scope"})
+NO_WRITE_IN_SCOPE = "no_write_in_scope"
+ACTION_OUTCOME = "action_outcome"
+SUPPORTED_PROPERTIES = frozenset({NO_WRITE_IN_SCOPE, ACTION_OUTCOME})
 
 # Obligation names. `observation_coverage` is the name the #189 thread already
 # uses. `observation_vantage` is the agent-evidence-vocabulary term for who
@@ -173,15 +180,44 @@ def _not_established(obligation: str, reason: str) -> dict[str, Any]:
 def _evaluate(checker_input: dict[str, Any]) -> dict[str, Any]:
     _validate(checker_input)
     prop = checker_input["property"]
-    ctx = checker_input["context"]
-    raw = checker_input["evidence"]["envelope"]
-
     if prop["name"] not in SUPPORTED_PROPERTIES:
         raise UnsupportedVerification(
             f"property {prop['name']!r} is not implemented by this checker; "
             "no verification of the property was performed"
         )
+    verdict = _absence_verdict(
+        prop["scope"], checker_input["context"], checker_input["evidence"]["envelope"]
+    )
+    if prop["name"] == NO_WRITE_IN_SCOPE:
+        return verdict
+    return _action_outcome(verdict)
 
+
+# The action outcome is the same evidence read as section 7's observation
+# states. An observed write is `present`; an established absence is `absent`.
+# Anything the evidence leaves open is an unknown outcome, and C1 keeps it
+# `pending` with its unmet obligation, including after the window has ended.
+_SETTLED_OUTCOME = {"fail": "present", "pass": "absent"}
+
+
+def _action_outcome(verdict: dict[str, Any]) -> dict[str, Any]:
+    if verdict["verdict"] == "not_established":
+        return {
+            "outcome": "pending",
+            "unmet_obligation": verdict["unmet_obligation"],
+            "reason": f"not verified by the end of the window: {verdict['reason']}",
+        }
+    return {
+        "outcome": _SETTLED_OUTCOME[verdict["verdict"]],
+        "unmet_obligation": None,
+        "reason": verdict["reason"],
+    }
+
+
+def _absence_verdict(
+    scope: list[str], ctx: dict[str, Any], raw: bytes
+) -> dict[str, Any]:
+    """Decide "no write under `scope` during the evaluated interval"."""
     policy = observedeffect.Policy(
         predicate_type=PREDICATE_TYPE, observer_public_key=ctx["observer_public_key"]
     )
@@ -200,7 +236,6 @@ def _evaluate(checker_input: dict[str, Any]) -> dict[str, Any]:
 
     pred = json.loads(base64.b64decode(json.loads(raw)["payload"]))["predicate"]
     observation = pred["observation"]
-    scope: list[str] = prop["scope"]
 
     # Per-claim binding. Coverage established for one interval cannot establish
     # completeness for another.

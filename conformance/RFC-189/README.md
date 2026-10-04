@@ -60,6 +60,12 @@ The reference verifier in the [agent-evidence-vectors](https://pypi.org/project/
 | 16 | complete observation, but write visibility declared for another invocation | `not_established` / `producer_capability_coverage` | C4, C5 |
 | 17 | complete observation, but no write visibility premise | `not_established` / `producer_capability_coverage` | C4 |
 | 18 | complete observation, but write visibility covers a narrower path than the claim | `not_established` / `producer_capability_coverage` | C4 |
+| 19 | a retried write, the interval sealed while blind where the write would land | `not_established` / `observation_coverage` | C1, C4 |
+| 20 | record 19, asked whether the retried write landed | outcome `pending` / `observation_coverage` | C1 |
+| 21 | a retry with one write observed below the agent | outcome `present` | C3 |
+| 22 | record 19's interval claiming the authoritative tier over its blind spot | outcome `pending` / `observation_coverage` | C1, C4 |
+| 23 | case 10's self-reported write, asked whether the action wrote | outcome `pending` / `observation_vantage` | C1, C3 |
+| 24 | case 01's read-only interval, asked whether the action wrote | outcome `absent` | C4 |
 
 Cases 03, 04 and 05 are the reason naming a gap matters: in all three the checker reads valid records that name /srv/app/vendor/ as unobserved, and it reaches three different verdicts. The same record cannot support "nothing changed under /srv/app/", yet it fully supports "nothing changed under /srv/app/src/", and a write it did see still settles `fail`.
 
@@ -71,6 +77,10 @@ The synthetic fixtures **stipulate** that `anchored_commitment_digest` and `prod
 
 The checker returns the evaluated property, path scope, claim reference, observer key, expected prior commitment and producer capability with each result. The claim reference is the interval identifier, so the binding names the property, invocation, interval and scope that C1 requires. The harness checks that binding before it grades the verdict and unmet obligation. These values identify the evaluation; they do not establish external provenance.
 
+## Action outcomes stay `pending`
+
+C1 keeps an unknown action outcome `pending` when the reporting window ends. Cases 19 to 24 test that sentence with the lost-response retry records: a tool completes a write, its response is lost, and the agent retries. The `action_outcome` property reads the same evidence as `no_write_in_scope` in section 7's observation states. An observed write is `present`, an established absence is `absent`, and everything else is `pending` with its unmet obligation. In cases 20 and 22 the interval is sealed, so the window has ended, and the outcome still reads `pending`; a checker that turns it into `not_established` fails both. Case 23 is C3 applied to the outcome: a self-reported write does not make the outcome `present`. A refused or malformed record stays a processing failure on this axis too.
+
 ## The three open items, and the cases that depend on them
 
 Section 7.4 names three open items. Each case file lists the ones its expected result depends on in `open_item_dependencies`, and the list is measured rather than written by hand: `test_checker.OpenItemDependencies` settles each item the other way, reruns every case, and fails unless the cases whose outcome changes are exactly the cases that declare the dependency.
@@ -78,10 +88,10 @@ Section 7.4 names three open items. Each case file lists the ones its expected r
 | Open item | Settled the other way, for the measurement | Cases whose result changes |
 | --- | --- | --- |
 | Gap naming | incomplete coverage that locates no gap is a well-formed unknown coverage state, so the claim is `not_established` | 06 |
-| Claim binding | the checker requires provenance evidence for the prior commitment, which these fixtures only stipulate | 01, 02, 03, 04, 05, 16, 17, 18 |
+| Claim binding | the checker requires provenance evidence for the prior commitment, which these fixtures only stipulate | 01, 02, 03, 04, 05, 16, 17, 18, 19, 20, 21, 24 |
 | Observation vantage | a claim of independent observation from the observed party's own vantage is a processing failure of its own | 08 |
 
-Case 10 depends on none of them: C3 settles it. The claim-binding row is the dependency @aeoess measured on [#219](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/pull/219#issuecomment-5937888670) for cases 01 to 05 and 16 to 18, now held by a test.
+Case 10 depends on none of them: C3 settles it. Cases 22 and 23 depend on none either, because their records are refused or self-reported before any binding question arises. The claim-binding row is the dependency @aeoess measured on [#219](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/pull/219#issuecomment-5937888670) for cases 01 to 05 and 16 to 18, now extended to the new cases and held by a test.
 
 ## Open questions for the rule text
 

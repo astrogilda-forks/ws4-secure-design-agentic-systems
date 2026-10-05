@@ -147,7 +147,7 @@ class Checker(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "pinned to section 7.4"):
             run.check_pin(case)
         case = load("RFC189-OE-01-PASS")
-        case["status"] = "adopted"
+        case["status"] = "approved"
         with self.assertRaises(ValueError):
             run.check_pin(case)
 

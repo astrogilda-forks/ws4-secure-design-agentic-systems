@@ -7,7 +7,7 @@ These cases serve the crosswalk gate in step 2 of [RFC-149's proposed work](http
 | Text | Status | What a case may cite |
 | --- | --- | --- |
 | Section 7 of the containment draft at [`84604125`](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/blob/84604125869469926968acdf433501f87d1d1665/whitepapers/agent-containment.md), the head of `feat/containment` after #219 | merged into the working draft; the paper is not yet approved | `7.1`, `7.2`, `7.4 C1` to `7.4 C6`, under `requirements.merged` |
-| The step 2 gate of RFC-149 at `1a1a2eff` | proposed scope, under review on #210 | `revision-and-subject-join`, `runtime-verifier`, `missing-evidence-result`, under `requirements.proposed` |
+| The step 2 gate of RFC-149 at `1a1a2eff`, whose text is unchanged since `cfeecc2` | proposed scope, under review on #210 | `revision-and-subject-join`, `runtime-verifier`, `missing-evidence-result`, under `requirements.proposed` |
 
 Every case is `candidate`. Its `consumer_result.decided_by` says whether merged clauses already decide the result (`merged`) or whether it waits on a boundary the crosswalk review has to settle (`proposed`). `run.py` checks the facts: each member's bytes match the pinned digest, each pinned reader reaches the stated verdict, and a result decided by merged text cites a merged clause.
 

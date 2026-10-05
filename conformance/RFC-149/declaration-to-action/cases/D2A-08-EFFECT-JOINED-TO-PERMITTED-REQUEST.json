@@ -1,6 +1,7 @@
 {
  "boundary": "request-to-action",
  "consumer_result": {
+  "decided_by": "merged",
   "result": "pass",
   "unmet_obligation": null
  },
@@ -12,7 +13,8 @@
   "source": "agent-evidence-vectors==0.16.0"
  },
  "id": "D2A-08-EFFECT-JOINED-TO-PERMITTED-REQUEST",
- "join": "the record's requestDigest is recomputed over the decided action and its arguments, so the effect is joined to the request that was decided",
+ "join": "M-R",
+ "join_detail": "the record's requestDigest is recomputed over the decided action and its arguments, so the effect is joined to the request that was decided",
  "note": "Digest-bound request, permit beside an observed write, independent observer with a prior commitment. The effect belongs to the request that was permitted.",
  "reader_expected": {
   "codes": [],
@@ -20,14 +22,14 @@
   "verdict": "valid"
  },
  "requirements": {
-  "adopted": {
+  "merged": {
    "clauses": [
-    "C4",
-    "C5"
+    "7.2",
+    "7.4 C4",
+    "7.4 C5"
    ],
    "commit": "84604125869469926968acdf433501f87d1d1665",
-   "document": "whitepapers/agent-containment.md",
-   "section": "7.4"
+   "document": "whitepapers/agent-containment.md"
   },
   "proposed": {
    "commit": "1a1a2effdbddf1013680fea52e56ee190c171e69",

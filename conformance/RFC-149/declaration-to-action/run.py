@@ -5,9 +5,10 @@ the verdict that reader must reach, and the result a consumer receives under
 the candidate crosswalk rule. This harness checks the parts that are facts:
 the member's bytes match the digest the case pins, and the pinned reader
 reaches the verdict the case states. The consumer result is the candidate
-expectation the crosswalk review is asked to adopt or change; the harness
-checks only that it is well formed and that each case keeps its adopted and
-proposed requirements apart. Nothing is written; any mismatch exits non-zero.
+expectation for the crosswalk review; the harness checks that it is well
+formed, that each case keeps the merged draft text it cites apart from the
+proposed RFC-149 text, and that a result said to follow from merged text cites
+a merged clause. Nothing is written; any mismatch exits non-zero.
 
 Readers: `auditrecord` from the `agent-evidence-vectors` package, and
 `aee-verify` (the Go reader at the same tag) for the artifact-binding corpus,
@@ -32,10 +33,13 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SOURCE = "agent-evidence-vectors==0.16.0"
 STATUS = "candidate"
 
-# Adopted text: section 7.4 of the containment paper as merged through #219.
-ADOPTED_COMMIT = "84604125869469926968acdf433501f87d1d1665"
-ADOPTED_CLAUSES = frozenset({"C1", "C2", "C3", "C4", "C5", "C6"})
-# Proposed text, not adopted: the crosswalk gate in step 2 of RFC-149's
+# Merged text: section 7 of the containment draft at the head of feat/containment
+# after #219. The draft is a working draft and is not approved.
+MERGED_COMMIT = "84604125869469926968acdf433501f87d1d1665"
+MERGED_CLAUSES = frozenset(
+    {"7.1", "7.2"} | {f"7.4 C{n}" for n in range(1, 7)}
+)
+# Proposed text: the crosswalk gate in step 2 of RFC-149's
 # proposed work, at the head of #210 when these cases were written.
 PROPOSED_COMMIT = "1a1a2effdbddf1013680fea52e56ee190c171e69"
 PROPOSED_ITEMS = frozenset(
@@ -122,9 +126,13 @@ def check(case: dict[str, Any]) -> list[str]:
     if is_open and not result.get("unmet_obligation"):
         problems.append("an open consumer result must name its unmet obligation")
     reqs = case["requirements"]
-    adopted = reqs["adopted"]
-    if adopted["commit"] != ADOPTED_COMMIT or not set(adopted["clauses"]) <= ADOPTED_CLAUSES:
-        problems.append("adopted requirements must cite section 7.4 clauses at 84604125")
+    merged = reqs["merged"]
+    if merged["commit"] != MERGED_COMMIT or not set(merged["clauses"]) <= MERGED_CLAUSES:
+        problems.append("merged requirements must cite section 7 clauses at 84604125")
+    if result.get("decided_by") not in {"merged", "proposed"}:
+        problems.append("consumer result must say whether merged or proposed text decides it")
+    if result.get("decided_by") == "merged" and not merged["clauses"]:
+        problems.append("a result decided by merged text must cite a merged clause")
     proposed = reqs["proposed"]
     if proposed["commit"] != PROPOSED_COMMIT or not set(proposed["items"]) <= PROPOSED_ITEMS:
         problems.append("proposed requirements must cite RFC-149 gate items at 1a1a2eff")

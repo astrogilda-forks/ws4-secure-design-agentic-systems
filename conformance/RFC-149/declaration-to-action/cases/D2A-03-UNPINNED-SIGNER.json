@@ -1,6 +1,7 @@
 {
  "boundary": "declaration-to-content",
  "consumer_result": {
+  "decided_by": "proposed",
   "result": "fail",
   "unmet_obligation": null
  },
@@ -12,17 +13,17 @@
   "source": "agent-evidence-vectors==0.16.0"
  },
  "id": "D2A-03-UNPINNED-SIGNER",
- "join": "a signed binding manifest names each artifact of the run by role, path and digest; the relying party checks the deployed files against it",
+ "join": "D-C",
+ "join_detail": "a signed binding manifest names each artifact of the run by role, path and digest; the relying party checks the deployed files against it",
  "note": "A valid signature by a key the consumer did not pin. Integrity holds; the signer is not one the relying party accepts. Whether an unaccepted manifest signer is fail or not_established is the issuer-acceptance boundary under #99.",
  "reader_expected": {
   "verdict": "failed"
  },
  "requirements": {
-  "adopted": {
+  "merged": {
    "clauses": [],
    "commit": "84604125869469926968acdf433501f87d1d1665",
-   "document": "whitepapers/agent-containment.md",
-   "section": "7.4"
+   "document": "whitepapers/agent-containment.md"
   },
   "proposed": {
    "commit": "1a1a2effdbddf1013680fea52e56ee190c171e69",

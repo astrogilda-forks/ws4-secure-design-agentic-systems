@@ -1,6 +1,7 @@
 {
  "boundary": "declaration-to-content",
  "consumer_result": {
+  "decided_by": "proposed",
   "result": "processing_failure",
   "unmet_obligation": null
  },
@@ -12,19 +13,19 @@
   "source": "agent-evidence-vectors==0.16.0"
  },
  "id": "D2A-04-NON-CANONICAL-ENCODING",
- "join": "a signed binding manifest names each artifact of the run by role, path and digest; the relying party checks the deployed files against it",
+ "join": "D-C",
+ "join_detail": "a signed binding manifest names each artifact of the run by role, path and digest; the relying party checks the deployed files against it",
  "note": "A valid signature over a non-canonical encoding. The reader refuses it as failed; under C2 a malformed input is a processing failure, so the crosswalk has to say which result a consumer receives.",
  "reader_expected": {
   "verdict": "failed"
  },
  "requirements": {
-  "adopted": {
+  "merged": {
    "clauses": [
-    "C2"
+    "7.4 C2"
    ],
    "commit": "84604125869469926968acdf433501f87d1d1665",
-   "document": "whitepapers/agent-containment.md",
-   "section": "7.4"
+   "document": "whitepapers/agent-containment.md"
   },
   "proposed": {
    "commit": "1a1a2effdbddf1013680fea52e56ee190c171e69",

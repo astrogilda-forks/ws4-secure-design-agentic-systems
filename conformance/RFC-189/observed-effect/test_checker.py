@@ -450,6 +450,22 @@ class OpenItemDependencies(unittest.TestCase):
                     self.assertIn("independence_evidence", case["open_item_dependencies"])
 
 
+class ScopeAndGapInputs(unittest.TestCase):
+    """Inputs a literal path comparison would misread."""
+
+    def test_a_scope_that_is_not_a_normalized_literal_path_is_refused(self):
+        for scope in ("/srv/app/../../etc/", "/srv/app/*", "/srv//app/"):
+            inp = run.build_input(load("RFC189-OE-01-PASS"))
+            inp["property"]["scope"] = [scope]
+            with self.assertRaises(checker.CandidateInputError):
+                checker.evaluate(inp)
+
+    def test_a_write_in_scope_still_fails_when_part_of_the_scope_was_not_watched(self):
+        inp = run.build_input(load("RFC189-OE-02-FAIL-WITNESS"))
+        inp["property"]["scope"] = [*inp["property"]["scope"], "/opt/"]
+        self.assertEqual(checker.evaluate(inp)["verdict"], "fail")
+
+
 class TextPin(unittest.TestCase):
     """The cases name the text of 7.4, and a changed text cannot stay green."""
 
@@ -494,9 +510,9 @@ class Summary(unittest.TestCase):
     def test_a_clean_run_states_what_it_does_not_test(self):
         code, text = self.run_with_summary()
         self.assertEqual(code, 0)
-        self.assertIn("36 of 36 match their expectation", text)
+        self.assertIn("39 of 39 match their expectation", text)
         self.assertIn("They do not test a sandbox or a deployment", text)
-        self.assertIn("| `not_established` | 21 |", text)
+        self.assertIn("| `not_established` | 22 |", text)
         self.assertNotIn("Cases to look at", text)
 
     def test_a_failed_case_is_explained_with_its_clauses_and_note(self):
@@ -511,7 +527,7 @@ class Summary(unittest.TestCase):
         with mock.patch.object(run, "outcome", wrong):
             code, text = self.run_with_summary()
         self.assertEqual(code, 1)
-        self.assertIn("34 of 36 match their expectation", text)
+        self.assertIn("36 of 39 match their expectation", text)
         self.assertIn("**RFC189-OE-02-FAIL-WITNESS** (FAIL)", text)
         self.assertIn("Clauses: C3", text)
 

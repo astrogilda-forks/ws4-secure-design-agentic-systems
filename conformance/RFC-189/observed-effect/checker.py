@@ -208,14 +208,22 @@ def _validate_independence(ctx: dict[str, Any]) -> None:
 
 
 def _under(path: str, prefix: str) -> bool:
-    return path == prefix or path.startswith(
-        prefix if prefix.endswith("/") else prefix + "/"
-    )
+    return observedeffect._under(path, prefix)
 
 
 def _overlaps(a: str, b: str) -> bool:
     return _under(a, b) or _under(b, a)
 
+
+
+def _gap_outside(gap: Any, scope: list[str]) -> bool:
+    """True only for a normalized literal path that overlaps no scope entry."""
+    return (
+        isinstance(gap, str)
+        and observedeffect._path_normalized(gap, allow_trailing_slash=True)
+        and not observedeffect.GLOB_METACHARACTERS & set(gap)
+        and not any(_overlaps(gap, s) for s in scope)
+    )
 
 def _not_established(obligation: str, reason: str) -> dict[str, Any]:
     return {
@@ -319,7 +327,7 @@ def _independence_verdict(ctx: dict[str, Any], raw: bytes) -> dict[str, Any]:
     evidence = ctx["independence_evidence"]
     for name, obligation in INDEPENDENCE_CONDITIONS:
         entry = evidence.get(name, {})
-        missing = [f for f in _EVIDENCE_FIELDS if not entry.get(f)]
+        missing = [f for f in _EVIDENCE_FIELDS if not entry.get(f, "").strip()]
         if missing:
             return _not_established(
                 obligation,
@@ -385,7 +393,18 @@ def _absence_verdict(
             f"claim {ctx['claim_ref']!r}",
         )
     # The property may not be wider than what was observed.
-    uncovered = [p for p in scope if not any(_under(p, s) for s in pred["pathScope"])]
+    if any(
+        not observedeffect._path_normalized(p, allow_trailing_slash=True)
+        or observedeffect.GLOB_METACHARACTERS & set(p)
+        for p in scope
+    ):
+        raise CandidateInputError("property.scope must be normalized literal paths")
+    witnessed = any(_under(w["path"], s) for w in pred["writes"] for s in scope)
+    uncovered = (
+        []
+        if witnessed
+        else [p for p in scope if not any(_under(p, s) for s in pred["pathScope"])]
+    )
     if uncovered:
         return _not_established(
             OBSERVATION_COVERAGE,
@@ -437,11 +456,16 @@ def _absence_verdict(
             "the record states that coverage could not be determined: "
             f"{coverage['notEstablished']}",
         )
-    blind = (
-        []
-        if coverage["scopeComplete"]
-        else [g for g in coverage["gaps"] if any(_overlaps(g, s) for s in scope)]
-    )
+    if not isinstance(coverage["scopeComplete"], bool):
+        raise MalformedEvidence(["coverage-scope-complete-not-boolean"])
+    # A named span the observer did not see is a gap in the interval, whatever
+    # the path scope says.
+    if coverage.get("unobservedIntervals"):
+        return _not_established(
+            OBSERVATION_COVERAGE,
+            f"the record names unobserved sub-interval(s): {coverage['unobservedIntervals']}",
+        )
+    blind = [g for g in coverage["gaps"] if not _gap_outside(g, scope)]
     if blind:
         return _not_established(
             OBSERVATION_COVERAGE,

@@ -67,6 +67,11 @@ The reference verifier in the [agent-evidence-vectors](https://pypi.org/project/
 | 23 | case 10's self-reported write, asked whether the action wrote | outcome `pending` / `observation_vantage` | C1, C3 |
 | 24 | case 01's read-only interval, asked whether the action wrote | outcome `absent` | C4 |
 | 25 | no write seen, coverage stated as `not_established` with its reason | `not_established` / `observation_coverage` | C4, C7 |
+| 26 | no write seen, three seconds of the interval unobserved | `not_established` / `observation_coverage` | C4, C7 |
+| 27 | coverage `not_established` with its reason, and writes observed in scope | `fail` | C3, C7 |
+| 28 | coverage `not_established` with no reason | processing failure, `coverage-not-established-without-reason` | C2, C7 |
+
+Case 26 is C7's sub-interval gap: the record's path scope is whole, and its own `unobservedIntervals` names a span it did not see. Cases 27 and 28 finish the third shape: a seen write still settles `fail`, and a statement with no reason is malformed.
 
 Case 25 is the third shape a coverage statement can take: the observer says it could not determine coverage, and says why (its audit buffer dropped events without recording their paths). The record names no gap and saw no write, and the claim is still `not_established`. A checker that reads an empty gap list as complete coverage passes it, which is the vacuous pass a malformed case 06 is refused for.
 
@@ -110,7 +115,7 @@ Section 7.4 names two open items, claim binding and observation vantage. C7 sett
 
 | Open item | Settled the other way, for the measurement | Cases whose result changes |
 | --- | --- | --- |
-| Claim binding | the checker requires provenance evidence for the prior commitment, which these fixtures only stipulate | 01, 02, 03, 04, 05, 16, 17, 18, 19, 20, 21, 24, 25 |
+| Claim binding | the checker requires provenance evidence for the prior commitment, which these fixtures only stipulate | 01, 02, 03, 04, 05, 16, 17, 18, 19, 20, 21, 24, 25, 26, 27 |
 | Observation vantage | a claim of independent observation from the observed party's own vantage is a processing failure of its own | 08 |
 
 The same list also carries one premise the cases stipulate rather than an open item of the text, measured the same way:

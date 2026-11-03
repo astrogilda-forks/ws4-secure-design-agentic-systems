@@ -1,6 +1,6 @@
 {
  "against": {
-  "commit": "05bed163b211152fc1b969e3932847164c2efeb3",
+  "text_sha256": "eecd5cc0181c305542da3ac754b9a3504990d4c1978aa40b947c18b764a43257",
   "document": "whitepapers/agent-containment.md",
   "section": "7.4"
  },
@@ -21,7 +21,7 @@
    "observed_effect": {
     "sha256": "5b9ea5001ad5ce1abc5502040062e45e14b03586c309675f1e43c709410d974e",
     "slug": "mutation-none-with-a-named-gap-in-scope",
-    "source": "agent-evidence-vectors==0.25.0",
+    "source": "agent-evidence-vectors",
     "vector": "v5b9ea5001ad5ce1a"
    }
   },

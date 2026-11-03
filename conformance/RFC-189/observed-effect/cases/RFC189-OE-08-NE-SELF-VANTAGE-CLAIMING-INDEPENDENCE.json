@@ -1,6 +1,6 @@
 {
  "against": {
-  "commit": "05bed163b211152fc1b969e3932847164c2efeb3",
+  "text_sha256": "eecd5cc0181c305542da3ac754b9a3504990d4c1978aa40b947c18b764a43257",
   "document": "whitepapers/agent-containment.md",
   "section": "7.4"
  },
@@ -20,7 +20,7 @@
    "observed_effect": {
     "sha256": "cdec1eae37009e6db558f66ff929f5ba1e20838adc3c18ac9fe5f059abb7a087",
     "slug": "authoritative-with-self-vantage",
-    "source": "agent-evidence-vectors==0.25.0",
+    "source": "agent-evidence-vectors",
     "vector": "vcdec1eae37009e6d"
    }
   },

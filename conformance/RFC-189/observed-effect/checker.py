@@ -1,9 +1,8 @@
 """Checker for section 7.4 of the containment paper over Observed Effect records.
 
 The rule under test is section 7.4, "Evidence sufficiency for absence claims",
-of `whitepapers/agent-containment.md` as merged into `feat/containment` at
-05bed163 (see ../README.md for the clauses and the #189 comments each comes
-from). The paper is a working draft, so every case this checker grades is a
+of `whitepapers/agent-containment.md`, pinned by the text digest in run.py (see
+../README.md for the clauses and the #189 comments each comes from). The paper is a working draft, so every case this checker grades is a
 candidate case pinned to that text, not a conformance requirement.
 
 The evidence is a signed Observed Effect statement (a DSSE envelope carrying an

@@ -4,8 +4,12 @@ from __future__ import annotations
 
 import copy
 import json
+import io
+import contextlib
 import os
+import tempfile
 import unittest
+from unittest import mock
 from collections.abc import Callable, Iterator
 from contextlib import AbstractContextManager, contextmanager, nullcontext
 from types import SimpleNamespace
@@ -28,7 +32,7 @@ def load(case_id: str) -> dict[str, Any]:
 
 class Harness(unittest.TestCase):
     def test_every_committed_case_matches(self) -> None:
-        self.assertEqual(run.main(), 0)
+        self.assertEqual(run.main([]), 0)
 
     def test_expectation_never_reaches_the_checker(self) -> None:
         built = run.build_input(load("RFC189-OE-03-NE-NAMED-GAP"))
@@ -444,6 +448,72 @@ class OpenItemDependencies(unittest.TestCase):
             if case_id.startswith("RFC189-IND-") and case["expected"]["verdict"] == "pass":
                 with self.subTest(case=case_id):
                     self.assertIn("independence_evidence", case["open_item_dependencies"])
+
+
+class TextPin(unittest.TestCase):
+    """The cases name the text of 7.4, and a changed text cannot stay green."""
+
+    SECTION = "### 7.4 Evidence\n\nA rule.\n\n---\n\n## 8. Next\n"
+
+    def test_digest_stops_at_the_next_heading(self):
+        self.assertEqual(
+            run.section_digest(self.SECTION),
+            run.section_digest("# Paper\n\n" + self.SECTION + "\nLater text.\n"),
+        )
+
+    def test_one_changed_word_moves_the_digest(self):
+        self.assertNotEqual(
+            run.section_digest(self.SECTION),
+            run.section_digest(self.SECTION.replace("A rule", "A MUST")),
+        )
+
+    def test_a_paper_without_the_section_has_no_digest(self):
+        self.assertIsNone(run.section_digest("# Paper\n\n## 7. Detection\n"))
+
+    def test_this_checkout_matches_the_pin_or_has_no_section(self):
+        self.assertIsNone(run.text_problem(run.paper_digest()))
+
+    def test_a_moved_text_fails_the_run_and_says_so(self):
+        with mock.patch.object(run, "paper_digest", return_value="0" * 64):
+            with contextlib.redirect_stdout(io.StringIO()) as out:
+                self.assertEqual(run.main([]), 1)
+        self.assertIn("TEXT section 7.4 hashes to", out.getvalue())
+
+
+class Summary(unittest.TestCase):
+    """The summary CI shows explains a run to someone who did not build it."""
+
+    def run_with_summary(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "summary.md")
+            with contextlib.redirect_stdout(io.StringIO()):
+                code = run.main(["--summary", path])
+            with open(path, encoding="utf-8") as fh:
+                return code, fh.read()
+
+    def test_a_clean_run_states_what_it_does_not_test(self):
+        code, text = self.run_with_summary()
+        self.assertEqual(code, 0)
+        self.assertIn("36 of 36 match their expectation", text)
+        self.assertIn("They do not test a sandbox or a deployment", text)
+        self.assertIn("| `not_established` | 21 |", text)
+        self.assertNotIn("Cases to look at", text)
+
+    def test_a_failed_case_is_explained_with_its_clauses_and_note(self):
+        real = run.outcome
+
+        def wrong(inp):
+            got = real(inp)
+            if got.get("verdict") == "fail":
+                return {"verdict": "pass", "unmet_obligation": None}
+            return got
+
+        with mock.patch.object(run, "outcome", wrong):
+            code, text = self.run_with_summary()
+        self.assertEqual(code, 1)
+        self.assertIn("34 of 36 match their expectation", text)
+        self.assertIn("**RFC189-OE-02-FAIL-WITNESS** (FAIL)", text)
+        self.assertIn("Clauses: C3", text)
 
 
 if __name__ == "__main__":

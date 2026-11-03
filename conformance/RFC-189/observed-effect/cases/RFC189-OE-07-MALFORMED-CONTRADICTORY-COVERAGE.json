@@ -1,6 +1,6 @@
 {
  "against": {
-  "commit": "05bed163b211152fc1b969e3932847164c2efeb3",
+  "text_sha256": "eecd5cc0181c305542da3ac754b9a3504990d4c1978aa40b947c18b764a43257",
   "document": "whitepapers/agent-containment.md",
   "section": "7.4"
  },
@@ -20,7 +20,7 @@
    "observed_effect": {
     "sha256": "6e71bd22b5d75d1c2b38ab76836db5c99f5e4bec3fb7fbb6f4feca6d1c1e6956",
     "slug": "coverage-contradiction",
-    "source": "agent-evidence-vectors==0.25.0",
+    "source": "agent-evidence-vectors",
     "vector": "v6e71bd22b5d75d1c"
    }
   },

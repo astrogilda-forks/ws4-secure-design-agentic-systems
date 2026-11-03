@@ -1,6 +1,6 @@
 {
  "against": {
-  "commit": "05bed163b211152fc1b969e3932847164c2efeb3",
+  "text_sha256": "eecd5cc0181c305542da3ac754b9a3504990d4c1978aa40b947c18b764a43257",
   "document": "whitepapers/agent-containment.md",
   "section": "7.4"
  },
@@ -21,7 +21,7 @@
    "observed_effect": {
     "sha256": "af2adbfde5df9b4c416671d4faf19b941f1d9dca503403ac2ec19683b6f8af71",
     "slug": "coverage-not-established-with-reason",
-    "source": "agent-evidence-vectors==0.25.0",
+    "source": "agent-evidence-vectors",
     "vector": "vaf2adbfde5df9b4c"
    }
   },

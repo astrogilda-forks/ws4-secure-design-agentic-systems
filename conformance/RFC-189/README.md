@@ -1,12 +1,12 @@
 # Section 7.4 candidate cases: what a verifier may conclude when evidence is absent
 
-These are executable cases for [section 7.4 of the containment paper](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/blob/05bed163b211152fc1b969e3932847164c2efeb3/whitepapers/agent-containment.md#74-evidence-sufficiency-for-absence-claims), merged into `feat/containment` at `05bed163` through [#219](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/pull/219), [#240](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/pull/240), [#269](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/pull/269) and [#270](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/pull/270), and [issue #189](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/issues/189). Every case file carries `"status": "candidate"` and an `against` block naming that file, section and commit; `run.py` refuses a case pinned to any other text. The cases stay non-normative until the paper is approved, as section 7.4 says. When an amendment changes 7.4, the pin, the clause table below and the expectations move together in one commit.
+These are executable cases for section 7.4 of the containment paper, `whitepapers/agent-containment.md`, merged into `feat/containment` through [#219](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/pull/219), [#240](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/pull/240), [#269](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/pull/269) and [#270](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/pull/270), and [issue #189](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/issues/189). Every case file carries `"status": "candidate"` and an `against` block naming that file, section and the SHA-256 of the section's text. `run.py` refuses a case pinned to any other text, and it fails when section 7.4 in the checkout no longer hashes to the pin, so a change to the rule cannot leave the cases green. On a branch whose paper has no section 7.4, such as `main` until the paper lands, there is no text to compare and the summary says so. The cases stay non-normative until the paper is approved, as section 7.4 says. When an amendment changes 7.4, the pin, the clause table below and the expectations move together in one commit; `python run.py --text-digest` prints the new digest.
 
-Case leads, named in section 7.4: @aeoess and @astrogilda ([proposal](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/issues/189#issuecomment-5827010158), [Imran's reply](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/issues/189#issuecomment-5827685232)).
+Case leads: @aeoess and @astrogilda ([proposal](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/issues/189#issuecomment-5827010158), [Imran's reply](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/issues/189#issuecomment-5827685232)).
 
 ## The rule, clause by clause
 
-C1-C7 are the clauses of section 7.4 as merged at `05bed163`, worded as there. C8 remains open: section 7.4 lists the observation vantage claim as an open item with a proposed resolution, that such a claim fails the first condition of the independence test and is self-reported under C3. Its other open item, how the prior commitment is joined to the invocation before it runs, is the C5 binding question below. The case files cite these IDs.
+C1-C7 are the clauses of section 7.4 as pinned, worded as there. C8 remains open: section 7.4 lists the observation vantage claim as an open item with a proposed resolution, that such a claim fails the first condition of the independence test and is self-reported under C3. Its other open item, how the prior commitment is joined to the invocation before it runs, is the C5 binding question below. The case files cite these IDs.
 
 | ID | Clause | Source |
 | --- | --- | --- |
@@ -36,11 +36,11 @@ An Observed Effect record states what an observer saw change during one interval
 
 The reference verifier in the [agent-evidence-vectors](https://pypi.org/project/agent-evidence-vectors/) package checks the record's signatures, the observer's prior commitment and the consistency of its coverage declaration. The checker then decides what the proposed rule permits it to conclude. A `valid` self-reported record still lacks independent observation. Case 10 returns `not_established` under C3; its reported write does not settle `fail` on its own.
 
-`observation_vantage` is the [agent-evidence-vocabulary](https://github.com/probityai/agent-evidence-vocabulary/blob/main/vocabulary.yaml) term for who observed: whether every input a claim depends on came from a vantage the observed party could neither forge nor suppress, such as a network boundary, syscall supervision or a hypervisor's read of guest state. A record the observed party could have written or suppressed is not independent evidence of what it asserts. Case 08 is that record.
+`observation_vantage` is the [agent-evidence-vocabulary](https://github.com/probityai/agent-evidence-vectors/blob/main/packages/vocabulary/vocabulary.yaml) term for who observed: whether every input a claim depends on came from a vantage the observed party could neither forge nor suppress, such as a network boundary, syscall supervision or a hypervisor's read of guest state. A record the observed party could have written or suppressed is not independent evidence of what it asserts. Case 08 is that record.
 
 ## Cases
 
-| Case | Record | Expected under 7.4 at `05bed163` | Clauses |
+| Case | Record | Expected under the pinned 7.4 | Clauses |
 | --- | --- | --- | --- |
 | 01 | read-only interval, complete coverage | `pass` | C4 |
 | 02 | two writes observed in scope | `fail` | C3 |
@@ -86,7 +86,7 @@ C1 keeps an unknown action outcome `pending` when the reporting window ends. Cas
 
 ## Observer independence
 
-Cases IND-01 to IND-11 test the three-condition independence test of 7.4, proposed in [#255](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/pull/255) and merged through [#240](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/pull/240). They pin the same merged text as the other cases, `05bed163`. [#270](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/pull/270) added the requirement that, once the text and these cases are approved, a verifier claiming to apply the test returns the expected verdict and unmet obligation for IND-01 to IND-10. The `observer_independence` property asks whether the observer of a record is independent of one named producer for one claim. Each of the three conditions (trust domain, identity basis, key control) needs an entry that names who controls the thing it is about, who established that, and where the evidence is.
+Cases IND-01 to IND-11 test the three-condition independence test of 7.4, proposed in [#255](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/pull/255) and merged through [#240](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/pull/240). They pin the same text as the other cases. [#270](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/pull/270) and [#294](https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/pull/294) added the requirement that, once the text and these cases are approved, a verifier claiming to apply the test returns the expected verdict and unmet obligation for IND-01 to IND-10, using their documented stipulated premises. A verifier that also appraises the referenced evidence may reach a different result for IND-01 and IND-02 without breaching it. The `observer_independence` property asks whether the observer of a record is independent of one named producer for one claim. Each of the three conditions (trust domain, identity basis, key control) needs an entry that names who controls the thing it is about, who established that, and where the evidence is.
 
 | Case | Input | Expected | Clauses |
 | --- | --- | --- | --- |
@@ -133,11 +133,11 @@ Case 10 depends on none of them: C3 settles it. Cases 22 and 23 depend on none e
 cd conformance/RFC-189/observed-effect
 python -m pip install --require-hashes -r requirements.txt
 agent-evidence-vectors --corpus vectors-observed-effect   # the pinned corpus behaves as its manifest declares
-python run.py                      # grades every case, read-only, non-zero on any mismatch
+python run.py                      # grades every case, read-only, non-zero on any mismatch or a moved 7.4
 python -m unittest test_checker    # harness and checker regressions
 ```
 
-`run.py` resolves each record by its identifier from the installed corpus, checks it against the SHA-256 digest the case pins, and passes the checker only the `checker_input`. It never writes. Every record comes from the published release that `requirements.txt` pins by hash; nothing is copied into this directory.
+`run.py` resolves each record by its identifier from the installed corpus, checks it against the SHA-256 digest the case pins, and passes the checker only the `checker_input`. It writes nothing in the tree; `--summary FILE` appends a plain account of the run to FILE, which the workflow shows on the run's summary page. Every record comes from the published release that `requirements.txt` pins by hash; nothing is copied into this directory.
 
 ## Corpus bumps
 

@@ -1,7 +1,9 @@
 # Grades the section 7.4 candidate cases in conformance/ on every change to
-# them. run.py exits non-zero on any case that no longer matches its
-# expectation, any record whose bytes miss the digest its case pins, and any
-# case pinned to other text; test_checker covers the checker and the harness.
+# them or to the paper. run.py exits non-zero on any case that no longer matches
+# its expectation, any record whose bytes miss the digest its case pins, any case
+# pinned to other text, and a section 7.4 that no longer hashes to the pin.
+# test_checker covers the checker and the harness. The run's summary page
+# explains the result to a reader who did not build the suite.
 name: conformance
 
 on:
@@ -9,10 +11,12 @@ on:
     branches: [main, feat/containment]
     paths:
       - "conformance/**"
+      - "whitepapers/agent-containment.md"
       - ".github/workflows/conformance.yml"
   pull_request:
     paths:
       - "conformance/**"
+      - "whitepapers/agent-containment.md"
       - ".github/workflows/conformance.yml"
 
 permissions:
@@ -49,7 +53,7 @@ jobs:
       - name: Grade every case against 7.4
         if: steps.cases.outputs.present == 'true'
         working-directory: ${{ env.CASES }}
-        run: python run.py
+        run: python run.py --summary "$GITHUB_STEP_SUMMARY"
       - name: Checker and harness regressions
         if: steps.cases.outputs.present == 'true'
         working-directory: ${{ env.CASES }}
